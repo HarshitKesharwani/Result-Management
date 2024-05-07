@@ -1,15 +1,19 @@
 const express = require("express");
-const auth = require("./mongo");
+const collection = require("./mongo");
 const cors = require("cors");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
 app.get("/", cors(), (req, res) => {});
+
 app.post("/", async (req, res) => {
   const { email, password } = req.body;
+
   try {
-    const check = await auth.findOne({ email: email });
+    const check = await collection.findOne({ email: email });
+
     if (check) {
       res.json("exist");
     } else {
@@ -19,7 +23,8 @@ app.post("/", async (req, res) => {
     res.json("fail");
   }
 });
-app.post("/Signup", async (req, res) => {
+
+app.post("/signup", async (req, res) => {
   const { email, password } = req.body;
 
   const data = {
@@ -28,13 +33,13 @@ app.post("/Signup", async (req, res) => {
   };
 
   try {
-    const check = await auth.findOne({ email: email });
+    const check = await collection.findOne({ email: email });
 
     if (check) {
       res.json("exist");
     } else {
       res.json("notexist");
-      await auth.insertMany([data]);
+      await collection.insertMany([data]);
     }
   } catch (e) {
     res.json("fail");
